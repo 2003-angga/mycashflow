@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mycashflow - Keuangan Pribadi</title>
+    <title>MycashFlow - Keuangan Pribadi</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
@@ -51,11 +51,16 @@
         .form-input { width: 100%; background: #F7FAFC; border: 1px solid var(--border); border-radius: 10px; padding: 10px 13px; color: var(--text); font-size: 14px; font-family: 'DM Sans', sans-serif; transition: border-color 0.2s, box-shadow 0.2s; outline: none; }
         .form-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-dim); } .form-input::placeholder { color: var(--muted); }
         select.form-input { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23718096' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
+        
+        .amount-input-wrap { position: relative; }
+        .amount-prefix { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); font-size: 14px; font-weight: 600; color: var(--muted); font-family: 'Space Grotesk', sans-serif; pointer-events: none; }
+        .amount-input { padding-left: 38px !important; font-size: 18px !important; font-weight: 600 !important; letter-spacing: -0.02em; }
+        .amount-input::placeholder { font-size: 16px; font-weight: 400; letter-spacing: normal; }
+        
         .type-toggle { display: flex; gap: 6px; background: #F7FAFC; border-radius: 10px; padding: 4px; border: 1px solid var(--border); }
         .type-btn { flex: 1; padding: 9px; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer; text-align: center; transition: all 0.2s; color: var(--muted); border: none; background: transparent; font-family: 'Space Grotesk', sans-serif; }
         .type-btn.active-income { background: var(--income-dim); color: var(--income); } .type-btn.active-expense { background: var(--expense-dim); color: var(--expense); }
         
-        /* Tombol tanggal cepat */
         .date-quick-btns { display: flex; gap: 6px; margin-top: 6px; }
         .date-quick-btn { flex: 1; padding: 6px 4px; border-radius: 8px; border: 1px solid var(--border); background: #F7FAFC; color: var(--muted); font-size: 11px; font-weight: 600; cursor: pointer; font-family: 'Space Grotesk', sans-serif; transition: all 0.15s; text-align: center; }
         .date-quick-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
@@ -89,6 +94,11 @@
         .loading-overlay.show { display: flex; }
         .spinner { width: 40px; height: 40px; border: 4px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Credit link */
+        .credit-link { display: inline-flex; align-items: center; gap: 4px; color: var(--muted); text-decoration: none; font-size: 11px; transition: color 0.2s; }
+        .credit-link:hover { color: var(--accent); }
+        .credit-link i { font-size: 10px; }
     </style>
 </head>
 <body>
@@ -99,14 +109,17 @@
     <div class="flex h-full relative">
         <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
         <aside class="sidebar flex flex-col h-full" id="sidebar">
-            <div class="p-5 pb-3"><div class="flex items-center gap-3"><div class="w-9 h-9 rounded-xl flex items-center justify-center" style="background:var(--accent-dim);"><i class="fas fa-wallet text-sm" style="color:var(--accent);"></i></div><div><h1 class="font-display font-bold text-base">Mycashflow</h1><p class="text-[10px] font-medium tracking-widest uppercase" style="color:var(--muted);">Keuangan Pribadi</p></div></div></div>
+            <div class="p-5 pb-3"><div class="flex items-center gap-3"><div class="w-9 h-9 rounded-xl flex items-center justify-center" style="background:var(--accent-dim);"><i class="fas fa-wallet text-sm" style="color:var(--accent);"></i></div><div><h1 class="font-display font-bold text-base">MycashFlow</h1><p class="text-[10px] font-medium tracking-widest uppercase" style="color:var(--muted);">Keuangan Pribadi</p></div></div></div>
             <nav class="flex-1 py-2" id="sideNav">
                 <div class="nav-item active" data-view="dashboard" onclick="switchView('dashboard')"><i class="fas fa-th-large"></i> Dashboard</div>
                 <div class="nav-item" data-view="transactions" onclick="switchView('transactions')"><i class="fas fa-exchange-alt"></i> Transaksi</div>
                 <div class="nav-item" data-view="reports" onclick="switchView('reports')"><i class="fas fa-chart-pie"></i> Laporan</div>
                 <div class="nav-item" data-view="spreadsheet" onclick="switchView('spreadsheet')"><i class="fas fa-table"></i> Spreadsheet</div>
             </nav>
-            <div class="p-4 border-t" style="border-color:var(--border);"><div class="text-[11px]" style="color:var(--muted);"><i class="fas fa-cloud mr-1"></i> Tersinkronisasi Cloud</div></div>
+            <div class="p-4 border-t" style="border-color:var(--border);">
+                <div class="text-[11px] mb-2" style="color:var(--muted);"><i class="fas fa-cloud mr-1"></i> Tersinkronisasi Cloud</div>
+                <a href="https://baaltazard.github.io/portofolio/" target="_blank" rel="noopener noreferrer" class="credit-link"><i class="fas fa-palette"></i> Design by Angga</a>
+            </div>
         </aside>
 
         <main class="flex-1 flex flex-col h-full overflow-hidden min-w-0">
@@ -121,6 +134,10 @@
                 </div>
             </header>
             <div class="flex-1 overflow-y-auto p-4 md:p-6" id="contentArea"></div>
+            <!-- Credit di bawah konten desktop -->
+            <footer class="hidden md:flex items-center justify-center py-2 shrink-0 border-t" style="border-color:var(--border); background: var(--surface);">
+                <a href="https://baaltazard.github.io/portofolio/" target="_blank" rel="noopener noreferrer" class="credit-link"><i class="fas fa-palette"></i> Design by Angga</a>
+            </footer>
         </main>
     </div>
 
@@ -151,100 +168,49 @@
 
         function showLoading(show) { document.getElementById('loadingOverlay').classList.toggle('show', show); }
 
-        // ===== DATE UTILITY (Robust) =====
-        // Mengubah apa pun dari spreadsheet (ISO string, YYYY-MM-DD, dll) ke objek Date lokal
+        function formatRupiah(num) { if (!num && num !== 0) return ''; return Number(num).toLocaleString('id-ID'); }
+        function parseRupiah(str) { if (!str) return 0; return parseInt(String(str).replace(/\D/g, '')) || 0; }
+        function onAmountInput(e) {
+            const input = e.target;
+            const raw = parseRupiah(input.value);
+            if (raw === 0 && input.value === '') { input.value = ''; }
+            else if (raw === 0) { input.value = ''; }
+            else {
+                const cursorPos = input.selectionStart;
+                const beforeLen = input.value.length;
+                input.value = formatRupiah(raw);
+                const afterLen = input.value.length;
+                const diff = afterLen - beforeLen;
+                input.setSelectionRange(cursorPos + diff, cursorPos + diff);
+            }
+        }
+
         function parseDate(val) {
             if (!val) return null;
-            // Jika sudah format YYYY-MM-DD
-            if (typeof val === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(val)) {
-                const [y, m, d] = val.split('-').map(Number);
-                return new Date(y, m - 1, d);
-            }
-            // Jika ISO string dari spreadsheet (misal: 2026-05-19T17:00:00.000Z)
-            if (typeof val === 'string' && val.includes('T')) {
-                const d = new Date(val);
-                // Koreksi timezone: ambil tanggal berdasarkan UTC agar sesuai spreadsheet
-                return new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
-            }
-            // Fallback
-            const d = new Date(val);
-            return isNaN(d.getTime()) ? null : d;
+            if (typeof val === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(val)) { const [y, m, d] = val.split('-').map(Number); return new Date(y, m - 1, d); }
+            if (typeof val === 'string' && val.includes('T')) { const d = new Date(val); return new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()); }
+            const d = new Date(val); return isNaN(d.getTime()) ? null : d;
         }
+        function toInputDate(val) { const d = parseDate(val); if (!d) return new Date().toISOString().slice(0, 10); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+        function fmtShort(val) { const d = parseDate(val); if (!d) return '-'; return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }); }
+        function toMonthKey(val) { const d = parseDate(val); if (!d) return ''; return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`; }
+        function todayStr() { const n = new Date(); return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`; }
+        function daysAgoStr(n) { const d = new Date(); d.setDate(d.getDate() - n); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
 
-        // Format ke string untuk input[type=date]
-        function toInputDate(val) {
-            const d = parseDate(val);
-            if (!d) return new Date().toISOString().slice(0, 10);
-            return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-        }
-
-        // Format tampilan pendek: "19 Mei"
-        function fmtShort(val) {
-            const d = parseDate(val);
-            if (!d) return '-';
-            return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
-        }
-
-        // Format tampilan penuh: "19 Mei 2026"
-        function fmtFull(val) {
-            const d = parseDate(val);
-            if (!d) return '-';
-            return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
-        }
-
-        // Untuk grouping/filter bulanan: "2026-05"
-        function toMonthKey(val) {
-            const d = parseDate(val);
-            if (!d) return '';
-            return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
-        }
-
-        // Tanggal hari ini format YYYY-MM-DD
-        function todayStr() {
-            const n = new Date();
-            return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`;
-        }
-
-        // Tanggal N hari yang lalu format YYYY-MM-DD
-        function daysAgoStr(n) {
-            const d = new Date();
-            d.setDate(d.getDate() - n);
-            return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-        }
-
-        // ===== DATA OPERATIONS =====
         async function fetchTransactions() {
             showLoading(true);
-            try {
-                const res = await fetch(`${API_URL}?action=read`);
-                if (!res.ok) throw new Error('Gagal memuat');
-                state.transactions = await res.json();
-            } catch (err) {
-                showToast('Gagal terhubung: ' + err.message, 'error');
-                state.transactions = [];
-            } finally { showLoading(false); }
+            try { const res = await fetch(`${API_URL}?action=read`); if (!res.ok) throw new Error('Gagal memuat'); state.transactions = await res.json(); }
+            catch (err) { showToast('Gagal terhubung: ' + err.message, 'error'); state.transactions = []; }
+            finally { showLoading(false); }
         }
         async function apiPost(payload) {
-            try {
-                const res = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(payload) });
-                if (!res.ok) throw new Error('Server error');
-                return true;
-            } catch (err) { showToast('Gagal simpan: ' + err.message, 'error'); return false; }
+            try { const res = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(payload) }); if (!res.ok) throw new Error('Server error'); return true; }
+            catch (err) { showToast('Gagal simpan: ' + err.message, 'error'); return false; }
         }
-        async function addTransaction(tx) {
-            const ok = await apiPost({ action: 'create', data: tx });
-            if (ok) { await fetchTransactions(); showToast('Transaksi ditambahkan', 'success'); renderCurrentView(); }
-        }
-        async function updateTransaction(id, tx) {
-            const ok = await apiPost({ action: 'update', data: { id, ...tx } });
-            if (ok) { await fetchTransactions(); showToast('Transaksi diperbarui', 'success'); renderCurrentView(); }
-        }
-        async function deleteTransaction(id) {
-            const ok = await apiPost({ action: 'delete', data: { id } });
-            if (ok) { await fetchTransactions(); showToast('Transaksi dihapus', 'info'); renderCurrentView(); }
-        }
+        async function addTransaction(tx) { const ok = await apiPost({ action: 'create', data: tx }); if (ok) { await fetchTransactions(); showToast('Transaksi ditambahkan', 'success'); renderCurrentView(); } }
+        async function updateTransaction(id, tx) { const ok = await apiPost({ action: 'update', data: { id, ...tx } }); if (ok) { await fetchTransactions(); showToast('Transaksi diperbarui', 'success'); renderCurrentView(); } }
+        async function deleteTransaction(id) { const ok = await apiPost({ action: 'delete', data: { id } }); if (ok) { await fetchTransactions(); showToast('Transaksi dihapus', 'info'); renderCurrentView(); } }
 
-        // ===== UTILITY =====
         function generateId() { return Date.now().toString(36) + Math.random().toString(36).substr(2,5); }
         function getFilteredByMonth(m) { return state.transactions.filter(t => toMonthKey(t.date) === m); }
         function getMonthTransactions() { return getFilteredByMonth(state.selectedMonth); }
@@ -322,7 +288,7 @@
         // ===== SPREADSHEET VIEW =====
         function renderSpreadsheet(area){const txs=state.transactions.slice().sort((a,b)=>{const da=parseDate(a.date),db=parseDate(b.date);if(!da||!db)return 0;return db-da;});area.innerHTML=`<div class="chart-card fade-in" style="padding:0;overflow:hidden;"><div class="flex items-center justify-between p-4" style="border-bottom:1px solid var(--border);"><h3 class="font-display font-semibold text-sm">Tampilan Spreadsheet</h3><span class="text-xs" style="color:var(--muted);">${txs.length} baris</span></div><div style="overflow-x:auto;max-height:520px;overflow-y:auto;"><table class="report-table" style="min-width:640px;"><thead><tr><th style="width:36px;">#</th><th>Tanggal</th><th>Tipe</th><th>Kategori</th><th>Deskripsi</th><th style="text-align:right;">Jumlah</th></tr></thead><tbody>${txs.length?txs.map((t,i)=>`<tr><td style="color:var(--muted);">${i+1}</td><td class="font-num">${toInputDate(t.date)}</td><td><span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded" style="background:${t.type==='income'?'var(--income-dim)':'var(--expense-dim)'}; color:${t.type==='income'?'var(--income)':'var(--expense)'};">${t.type==='income'?'Masuk':'Keluar'}</span></td><td><div class="flex items-center gap-2"><div class="cat-dot" style="background:${CAT_COLORS[t.category]||'#94A3B8'};"></div>${t.category}</div></td><td>${t.description}</td><td class="font-num text-right font-semibold" style="color:${t.type==='income'?'var(--income)':'var(--expense)'};">${t.type==='income'?'+':'-'}${fmtCur(t.amount)}</td></tr>`).join(''):'<tr><td colspan="6" class="text-center py-8" style="color:var(--muted);">Belum ada data</td></tr>'}</tbody></table></div></div>`;}
 
-        // ===== MODAL & FORM (DENGAN TOMBOL CEPAT TANGGAL) =====
+        // ===== MODAL & FORM =====
         function openModal(editId=null){
             state.editingId=editId; restoreModal();
             if(editId){
@@ -332,7 +298,7 @@
                     document.getElementById('btnSubmit').textContent='Perbarui';
                     document.getElementById('txId').value=tx.id;
                     setType(tx.type);
-                    document.getElementById('txAmount').value=tx.amount;
+                    document.getElementById('txAmount').value=formatRupiah(tx.amount);
                     document.getElementById('txDesc').value=tx.description;
                     document.getElementById('txDate').value=toInputDate(tx.date);
                     updateCatOpts(tx.type,tx.category);
@@ -366,8 +332,11 @@
                 </div>
                 <input type="hidden" id="txId"><input type="hidden" id="txType" value="income">
                 <div class="mb-3">
-                    <label class="block text-[11px] font-semibold mb-1 uppercase tracking-wider" style="color:var(--muted);">Jumlah (Rp)</label>
-                    <input type="number" id="txAmount" class="form-input font-num text-lg" placeholder="0" min="1" required>
+                    <label class="block text-[11px] font-semibold mb-1 uppercase tracking-wider" style="color:var(--muted);">Jumlah</label>
+                    <div class="amount-input-wrap">
+                        <span class="amount-prefix">Rp</span>
+                        <input type="text" id="txAmount" class="form-input font-num amount-input" placeholder="0" inputmode="numeric" oninput="onAmountInput(event)" required>
+                    </div>
                 </div>
                 <div class="mb-3">
                     <label class="block text-[11px] font-semibold mb-1 uppercase tracking-wider" style="color:var(--muted);">Kategori</label>
@@ -394,33 +363,16 @@
             </form>`;
         }
 
-        // Set tanggal cepat
-        function setQuickDate(daysAgo) {
-            document.getElementById('txDate').value = daysAgoStr(daysAgo);
-            highlightQuickBtn();
-        }
-
-        // Highlight tombol aktif berdasarkan tanggal yang terpilih
-        function highlightQuickBtn() {
-            const current = document.getElementById('txDate')?.value;
-            document.querySelectorAll('.date-quick-btn').forEach(btn => {
-                const offset = parseInt(btn.dataset.offset);
-                btn.classList.toggle('active', current === daysAgoStr(offset));
-            });
-        }
-
+        function setQuickDate(daysAgo) { document.getElementById('txDate').value = daysAgoStr(daysAgo); highlightQuickBtn(); }
+        function highlightQuickBtn() { const current = document.getElementById('txDate')?.value; document.querySelectorAll('.date-quick-btn').forEach(btn => { const offset = parseInt(btn.dataset.offset); btn.classList.toggle('active', current === daysAgoStr(offset)); }); }
         function setType(type){state.formType=type;document.getElementById('txType').value=type;document.getElementById('btnIncome').className='type-btn'+(type==='income'?' active-income':'');document.getElementById('btnExpense').className='type-btn'+(type==='expense'?' active-expense':'');updateCatOpts(type);}
         function updateCatOpts(type,sel=null){const s=document.getElementById('txCategory');if(!s)return;const cats=type==='income'?INCOME_CATS:EXPENSE_CATS;s.innerHTML=cats.map(c=>`<option value="${c}" ${c===sel?'selected':''}>${c}</option>`).join('');}
         
         async function handleSubmit(e){
             e.preventDefault();
-            const id=document.getElementById('txId').value,
-                  type=document.getElementById('txType').value,
-                  amount=parseInt(document.getElementById('txAmount').value),
-                  category=document.getElementById('txCategory').value,
-                  description=document.getElementById('txDesc').value.trim(),
-                  date=document.getElementById('txDate').value;
-            if(!amount||amount<1){showToast('Jumlah harus > 0','error');return;}
+            const amount=parseRupiah(document.getElementById('txAmount').value);
+            const id=document.getElementById('txId').value,type=document.getElementById('txType').value,category=document.getElementById('txCategory').value,description=document.getElementById('txDesc').value.trim(),date=document.getElementById('txDate').value;
+            if(!amount||amount<1){showToast('Jumlah harus lebih dari 0','error');return;}
             if(!description){showToast('Deskripsi wajib diisi','error');return;}
             if(!date){showToast('Tanggal wajib diisi','error');return;}
             closeModal(); showLoading(true);
@@ -438,7 +390,6 @@
         document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();restoreModal();}});
         document.getElementById('modalOverlay').addEventListener('click',e=>{if(e.target===e.currentTarget){closeModal();restoreModal();}});
 
-        // ===== INIT =====
         async function init() {
             if(API_URL==='PASTE_URL_WEB_APP_ANDA_DISINI'){
                 document.getElementById('contentArea').innerHTML=`<div class="empty-state" style="height:100%;"><i class="fas fa-exclamation-triangle" style="font-size:48px;color:var(--expense);opacity:0.5;"></i><h3 class="font-display text-xl font-bold mt-4">API Belum Dikonfigurasi</h3><p class="text-sm mt-2" style="color:var(--muted);max-width:400px;">Buka kode HTML, cari variabel <strong>API_URL</strong> dan ganti nilainya dengan URL Web App Google Apps Script yang sudah di-deploy.</p></div>`;
